@@ -65,7 +65,7 @@
                     $("#sadrzaj").html(``);
                     for (let pitanje of data.pitanja) {
                         $("#sadrzaj").append(`<div class="red ">
-                            <textarea class="form-control" columns="3" rows="3" disabled="true">${pitanje.tekst}</textarea>
+                            <p  >${pitanje.tekst ||""}</p>
                             <br>
                             <input id="${pitanje.id}odgovor" ></input>
                             <button id="${pitanje.id}odgovori"> Odgovori</button>
@@ -101,9 +101,9 @@
                     $(`#Row-${red}`).append(`<div class="col-3 kvizDiv">
                  <h4 >${kviz.naziv}</h4>
                 <br>
-                <p>${kviz.opis}</p>
+                
                 <br>
-                     <button  id="${kviz.id}pokreni" data-toggle="modal"
+                     <button class="btn btn-primary"  id="${kviz.id}pokreni" data-toggle="modal"
                          data-target="#exampleModal" data-backdrop="false" data-kviz="${kviz.id}" data-naziv="${kviz.naziv}">Pokreni</button>
             </div>`);
                     kolona++;

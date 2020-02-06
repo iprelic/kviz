@@ -1,26 +1,62 @@
 body{
-    background-image: url("background.jpg");
-    background-size: cover;
-    margin: 0;
-  }
-  .kvizovi {
+  background-image: url("background.jpg");
+  background-size: cover;
+  margin: 0;
+}
+.kvizovi {
+
+  width: 70%;
+  margin-left: 15%;
+  font-size: 14pt;
+  line-height: 25pt;
+  word-spacing: 3pt;
+  padding: 40px;
+  text-align: justify;
   
-    width: 70%;
-    margin-left: 15%;
-    font-size: 14pt;
-    line-height: 25pt;
-    word-spacing: 3pt;
-    padding: 40px;
-    text-align: justify;
-    
-  }
-  .kvizDiv{
-    text-align: center;
-    margin-right: 10px;
-    margin-top: 10px;
-    background-color: white;
-    border-radius: 20px;
-  }
-  nav{
-      background-color: whitesmoke;
-  }
+}
+.kvizDiv{
+  text-align: center;
+  margin-right: 10px;
+  margin-top: 10px;
+  background-color: white;
+  border-radius: 20px;
+}
+nav{
+    background-color: whitesmoke;
+}
+#pitanja{
+  display: inline-block;
+  max-width: 700px;
+  margin-right: 50px;
+  margin-top: 50px;
+  vertical-align: top;
+  background-color: white;
+}
+.dugmeUnutarTabele{
+  width: 100%;
+  color: white;
+  background-color:#33104b ;
+  border: #33104b solid;
+}
+#omotac{
+  display: flex;
+  justify-content: center;
+}
+#kvizoviWrapper{
+  max-width: 650px;
+  display: inline-block;
+  margin-right: 50px;
+  vertical-align: top;
+}
+#noviKviz{
+  display: inline-block;
+  margin-left: 50px;
+}
+#pitanjaWrapper{
+  max-width: 500px;
+  display: inline-block;
+  vertical-align: top;
+}
+#kvizoviTabela{
+  background-color: white;
+}

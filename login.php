@@ -1,4 +1,8 @@
 <?php
+    session_start();
+    if(isset($_SESSION["korisnik"])){
+      header("Location:index.php");
+    }
     include "api/database.php";
     if(isset($_POST["login"])){
       $db=new Database("matematika");
@@ -8,8 +12,7 @@
       $rez=$db->getResult();
       $row=$rez->fetch_object();
       if(isset($row)){      
-        if(session_status()!==PHP_SESSION_ACTIVE)
-          session_start();
+          
         $_SESSION["korisnik"]=$row;
         header("Location:index.php");
       }else{

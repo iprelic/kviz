@@ -1,4 +1,8 @@
-<?php include "glavnaSesija.php"; ?>
+<?php
+    include "glavnaSesija.php";
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,9 +33,26 @@
 
 
         <div class="form-group">
-            <button class="btn btn-primary" id="dodajPitanje">Dodaj pitanje</button>
+            <button class="btn btn-primary" name="dodaj" id="dodajPitanje">Dodaj pitanje</button>
         </div>
     </form>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#dodajPitanje").click(function (e) {
+                e.preventDefault();
+                $.post("dodajPitanje.php", {
+                    dodaj: "dodaj",
+                    naziv: $("#naziv").val(),
+                    opis: $("#opis").val(),
+                    odgovor: $("#odgovor").val()
+                }, function (data) {
+                    JSON.parse(data);
+                    alert(data.status);
+                })
+            })
+        })
+    </script>
 </body>
 
 </html>

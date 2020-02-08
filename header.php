@@ -18,9 +18,7 @@
             <?php
                 if($_SESSION["korisnik"]->naziv_uloge=="admin"){
                     ?>
-                    <li class="nav-item mx-auto" >
-                        <a class="nav-link" href="admin.php">Admin</a>
-                    </li>
+                    
                     
                     <li class="nav-item mx-auto" >
                         <a class="nav-link" href="kvizoviAdmin.php">Izmena kvizova</a>

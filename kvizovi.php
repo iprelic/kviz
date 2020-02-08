@@ -15,36 +15,45 @@
 
 <body>
     <?php include "header.php"; ?>
+    <div class="container">
+        <div class="kvizovi">
 
-    <div class="kvizovi">
-
-        <div id="kvizoviKontejner">
+            <div id="kvizoviKontejner">
 
 
+            </div>
+            <input type="text" hidden="true" id="trenutniId" />
+            <style type="text/css">
+                .red {
+                    margin-top: 10%;
+                    /* border-radius: 10px;
+                    border-style: solid;
+                    border-width: 0.5px;
+                    margin: 10px auto;
+                    padding: 10px;
+                    width: 33%; */
+                }
+            </style>
         </div>
-        <input type="text" hidden="true" id="trenutniId" />
-        <style type="text/css">
-            .red {
-                margin-top: 10%;
-            }
-        </style>
-    </div>
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div id="sadrzaj" class="modal-body">
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel"></h5>
+                        <button type="button" class="close form-control" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="sadrzaj" class="modal-body">
+
+                    </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
@@ -65,18 +74,21 @@
                     $("#sadrzaj").html(``);
                     for (let pitanje of data.pitanja) {
                         $("#sadrzaj").append(`<div class="red ">
-                            <p  >${pitanje.tekst ||""}</p>
+                            <p  >${pitanje.tekst || ""}</p>
                             <br>
-                            <input id="${pitanje.id}odgovor" ></input>
-                            <button id="${pitanje.id}odgovori"> Odgovori</button>
-                            <button id="${pitanje.id}tacanOdgovorDugme">Vidi tacan odgovor</button>
+                            <input class='form-control' id="${pitanje.id}odgovor" ></input>
                             <br>
-                            <label id="${pitanje.id}tacanOdgovor" hidden="true" />
+                            <button class='form-control' style='background-color:blue; color:white;' id="${pitanje.id}odgovori"> Odgovori</button>
+                            <br>
+                            <button class='form-control' style='background-color:green; color:white;' id="${pitanje.id}tacanOdgovorDugme">Vidi tacan odgovor</button>
+                            <br>
+                            <label class='form-control' id="${pitanje.id}tacanOdgovor" hidden="true" />
                         <div>`);
                         $(`#${pitanje.id}odgovori`).click(proveriOdgovor(pitanje));
                         $(`#${pitanje.id}tacanOdgovorDugme`).click(function () {
                             $(`#${pitanje.id}tacanOdgovor`).html(pitanje.odgovor);
                             $(`#${pitanje.id}tacanOdgovor`).attr("hidden", false);
+                            $(`#${pitanje.id}odgovori`).attr("disabled", true);
                         });
                     }
                 })
@@ -84,7 +96,7 @@
         })
 
         function napuniKvizove() {
-            $.getJSON("http://localhost/kviz/api/kviz.json", function (data) {
+            $.getJSON("http://localhost/kviz/api/kvizSaPitanjima.json", function (data) {
                 if (data.status !== "ok") {
                     alert(data.status);
                     return;
@@ -102,7 +114,6 @@
                  <h4 >${kviz.naziv}</h4>
                 <br>
                 
-                <br>
                      <button class="btn btn-primary"  id="${kviz.id}pokreni" data-toggle="modal"
                          data-target="#exampleModal" data-backdrop="false" data-kviz="${kviz.id}" data-naziv="${kviz.naziv}">Pokreni</button>
             </div>`);
@@ -116,9 +127,14 @@
             return function () {
                 let odg = $(`#${pitanje.id}odgovor`).val();
                 if (odg === pitanje.odgovor) {
+
                     $(`#${pitanje.id}odgovor`).css("background-color", "green");
+                    $.post("odgovorNaPitanje.php", { metoda: "povecaj", pitanje: pitanje.id }, function (data) {
+                        console.log(data);
+                    });
                 } else {
                     $(`#${pitanje.id}odgovor`).css("background-color", "red");
+                    $.post("odgovorNaPitanje.php", { metoda: "smanji", pitanje: pitanje.id })
                 }
             }
         }

@@ -7,10 +7,15 @@
     }
     if(isset($_GET["metoda"])){
         if($_GET["metoda"]=="vrati iz kviza"){
-            $db->ExecuteQuery("select p.*,kp.poeni as 'poeni'  from pitanje p inner join kviz_pitanje kp on(p.id=kp.pitanje) where kp.kviz=".$_GET["kviz"]);
+            $db->ExecuteQuery("select p.* from pitanje p inner join kviz_pitanje kp on(p.id=kp.pitanje) where kp.kviz=".$_GET["kviz"]);
         }
         if($_GET["metoda"]=="vrati koje nisu u kvizu"){
-            $db->ExecuteQuery("select p.*  from pitanje p left join kviz_pitanje kp on(p.id=kp.pitanje) where kp.kviz is null or not kp.kviz=".$_GET["kviz"]);
+            $db->ExecuteQuery("select distinct p.naslov,p.id  from pitanje p left join kviz_pitanje kp on(p.id=kp.pitanje) where kp.kviz is null or kp.kviz!=".$_GET["kviz"]);
+        }
+        if($_GET["metoda"]=="vrati sa prosecima"){
+            $db->ExecuteQuery("SELECT k.id,k.naziv, ROUND(100*SUM(p.pogodili)/SUM(p.pogodili+p.promasili),2) AS 'prosek'
+            FROM kviz k INNER JOIN kviz_pitanje kp ON (kp.kviz=k.id) INNER JOIN pitanje p ON (p.id=kp.pitanje)
+            GROUP BY k.id");
         }
         $rez=$db->getResult();
         $response=array();
@@ -28,10 +33,10 @@
     }
     if(isset($_POST["metoda"])){
         if($_POST["metoda"]=="dodajVezu"){
-            if(!intval($_POST["kviz"]) ||!intval($_POST["pitanje"]) || !intval($_POST["brojPoena"]) || intval($_POST["brojPoena"])<1){
-                echo "Broj primeraka mora biti pozitivan broj";
+            if(!intval($_POST["kviz"]) ||!intval($_POST["pitanje"]) ){
+                echo "greska";
             }else{
-                $db->ExecuteQuery("insert into kviz_pitanje(kviz,pitanje,poeni) values (".$_POST["kviz"].",".$_POST["pitanje"].",".$_POST["brojPoena"].")");
+                $db->ExecuteQuery("insert into kviz_pitanje(kviz,pitanje) values (".$_POST["kviz"].",".$_POST["pitanje"].")");
                 if(!$db->getResult()){
                     echo $db->getError();
                 }else{

@@ -44,8 +44,8 @@
             <div class="col-md-3">
             </div>
           <div class="col-md-6">
-            <h2><strong>Login</strong> forma</h2>
-            <h4>Ulogujte se da biste nastavili da koristite aplikaciju</h4>
+            <h2><strong>Login</strong></h2>
+            
             <form method="POST" action="login.php">
 
               <label for="username">Username</label>

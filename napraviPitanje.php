@@ -19,23 +19,40 @@
 
 <body>
     <?php include "header.php"; ?>
+    <div class='container ' style='background-color: white;'>
+        <br>
+        <h3>
+            <center>Unesite novo pitanje: </center>
+        </h3>
+        <br>
+        <div class="row">
 
-    <form class="mt-5">
-        <div class="form-group">
-            <input type="text" class="form-control" id="naziv" placeholder="Naziv">
-        </div>
-        <div class="form-group">
-            <textarea class="form-control" id="opis" rows="3" placeholder="Opis"></textarea>
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="text" id="odgovor" placeholder="Tacan odgovor">
-        </div>
+            <div class="col-2">
+            </div>
+            <div class="col-8">
+                <form class="mt-5">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="naziv" placeholder="Naziv">
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" id="opis" rows="3" placeholder="Opis"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" type="text" id="odgovor" placeholder="Tacan odgovor">
+                    </div>
 
 
-        <div class="form-group">
-            <button class="btn btn-primary" name="dodaj" id="dodajPitanje">Dodaj pitanje</button>
+                    <div class="form-group">
+                        <button class="btn btn-primary" name="dodaj" id="dodajPitanje">Dodaj pitanje</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-2">
+            </div>
+
         </div>
-    </form>
+
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
         $(document).ready(function () {
@@ -47,7 +64,7 @@
                     opis: $("#opis").val(),
                     odgovor: $("#odgovor").val()
                 }, function (data) {
-                    JSON.parse(data);
+                    data = JSON.parse(data);
                     alert(data.status);
                 })
             })

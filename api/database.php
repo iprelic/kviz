@@ -25,7 +25,9 @@ class Database {
 	{
 		$this->dblink->close();
 	}
-
+	function getError(){
+		return $this->dblink->error;
+	}
 
 	function Connect()
 	{

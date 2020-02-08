@@ -1,5 +1,9 @@
 <?php
     include "glavnaSesija.php";
+    include "api/database.php";
+    if($_SESSION["korisnik"]->naziv_uloge!="admin"){
+        header("location:index.php");
+    }
 ?>
 
 <!DOCTYPE html>
@@ -20,51 +24,60 @@
     <?php
     include "header.php";
     ?>
-    <div id="kvizoviWrapper">
-        <label id="izabraniKviz" hidden=true></label>
-        <table id="kvizoviTabela" class="table">
-            <tr>
-                <th scope="col">Rb</th>
-                <th scope="col">Naziv</th>
-            </tr>
-            <tbody id="kvizovi">
+    <div class='container' style='background-color: white;'>
+        <div id="kvizoviWrapper">
+            <label id="izabraniKviz" hidden=true></label>
+            <table id="kvizoviTabela" class="table">
+                <tr>
+                    <th scope="col">Rb</th>
+                    <th scope="col">Naziv</th>
+                </tr>
+                <tbody id="kvizovi">
 
-            </tbody>
+                </tbody>
 
-        </table>
-    </div>
-    <div id="pitanjaWrapper" hidden="true">
-
-        <table id="pitanja" class="table" hidden="true">
-            <tr>
-                <th scope="col">Rb</th>
-                <th scope="col">Naslov</th>
-                <th scope="col">Broj poena</th>
-            </tr>
-            <tbody id="pitanjaBody"></tbody>
-        </table>
-        <div id="dodavanjeNoveVeze" hidden=true>
-            <select id="komboSaPitanjima" class="form-control"></select>
-            <input class="form-control" type="text" id="brojPoena" placeholder="Broj primeraka" />
-            <button id="dodajVezu">Dodaj pitanje u kviz</button>
+            </table>
         </div>
-    </div>
-    <div id="noviKviz">
-        <h1>Dodaj kviz</h1>
-        <form class="mt-5">
-            <div class="form-group">
-                <input type="text" class="form-control" id="nazivkviza" placeholder="Naziv">
-            </div>
-            <div class="form-group">
-                <button class="btn btn-primary" id="dodajKviz">Dodaj kviz</button>
-            </div>
-        </form>
+        <div id="pitanjaWrapper" hidden="true">
 
+            <table id="pitanja" class="table" hidden="true">
+                <tr>
+                    <th scope="col">Rb</th>
+                    <th scope="col">Naslov</th>
+                </tr>
+                <tbody id="pitanjaBody"></tbody>
+            </table>
+            <div id="dodavanjeNoveVeze" hidden=true>
+                <br>
+                <select id="komboSaPitanjima" class="form-control"></select>
+                <br>
+                <button id="dodajVezu" class="form-control" style="background-color: grey; color: white;">Dodaj pitanje
+                    u
+                    kviz</button>
+            </div>
+            <br><br>
+        </div>
+        <div id="noviKviz">
+            <h1>Dodaj kviz</h1>
+            <form class="mt-5">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="nazivkviza" placeholder="Naziv">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary form-control" id="dodajKviz">Dodaj kviz</button>
+                </div>
+            </form>
+
+        </div>
+        <div id="chart_div"></div>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="canvasjs.min.js"></script>
+    <script type="text/javascript" src="jquery.canvasjs.min.js"></script>
     <script>
         $(document).ready(function () {
             napuniKvizove();
+            nacrtajGrafik();
             $("#dodajVezu").click(dodajVezuKlik);
             $("#dodajKviz").click(function (e) {
                 e.preventDefault();
@@ -89,9 +102,20 @@
                         <th>${++i}</th>
                         <td contentEditable=true id="${kviz.id}Naziv">${kviz.naziv}</td>
                         <td>
-                            <button onClick="prikaziPitanja(${kviz.id})">Vidi sva pitanja</button>
-                            <button onClick="izmeniKviz(${kviz.id})">Izmeni</button>
-                            <button onClick="obrisiKviz(${kviz.id})">Obrisi</button>
+                        <div class='row'>
+                            <div class='col-6'>
+                                <button class='form-control' onClick="prikaziPitanja(${kviz.id})">Vidi sva pitanja</button>
+                            </div>
+                            <div class='col-3'>
+                                <button class='form-control' onClick="izmeniKviz(${kviz.id})">Izmeni</button>
+                            </div>
+                            <div class='col-3'>
+                                <button class='form-control' onClick="obrisiKviz(${kviz.id})">Obrisi</button>
+                            </div>
+                        </div>
+                            
+                            
+                            
                         </td>
                     </tr>`)
                 }
@@ -137,9 +161,8 @@
                         <tr>
                             <td>${++i}.</td>
                             <td>${pitanje.naslov}</td>
-                            <td>${pitanje.poeni}</td>
                             <td>
-                                <button onClick="obrisiVezu(${id},${pitanje.id})"> Obrisi</button>
+                                <button class='form-control' onClick="obrisiVezu(${id},${pitanje.id})"> Obrisi</button>
                             </td>
                         </tr>
                     `);
@@ -169,12 +192,12 @@
                 metoda: "dodajVezu",
                 kviz: $("#izabraniKviz").val(),
                 pitanje: $("#komboSaPitanjima").val(),
-                brojPoena: $("#brojPoena").val()
             }, function (data) {
                 if (data !== "ok") {
                     alert(data);
                 }
                 prikaziPitanja($("#izabraniKviz").val());
+                nacrtajGrafik();
             })
         }
         function obrisiVezu(kviz, pitanje) {
@@ -187,9 +210,65 @@
                     alert(data);
                 }
                 prikaziPitanja($("#izabraniKviz").val());
+                nacrtajGrafik();
             })
         }
+
+        function nacrtajGrafik() {
+            $.getJSON("kvizoviServer.php", { metoda: "vrati sa prosecima" }, function (data) {
+                if (data.status !== "ok") {
+                    alert(data.error);
+                    return;
+                }
+                $("#chart_div").html("");
+                let dataPoints = [];
+                for (let kviz of data.data) {
+
+                    dataPoints.push({
+                        y: parseInt(kviz.prosek),
+                        label: kviz.prosek + "%",
+                        indexLabel: kviz.naziv
+                    })
+                }
+                let options = {
+                    animationEnabled: true,
+                    title: {
+                        text: "Proseci tacnih odgovora po kvizovima",
+                        fontColor: "Peru"
+                    },
+                    axisY: {
+                        tickThickness: 0,
+                        lineThickness: 0,
+                        valueFormatString: " ",
+                        gridThickness: 0
+                    },
+                    axisX: {
+                        tickThickness: 0,
+                        lineThickness: 0,
+                        labelFontSize: 18,
+                        labelFontColor: "Peru"
+                    },
+                    data: [{
+                        indexLabelFontSize: 26,
+                        toolTipContent: "<span style=\"color:#62C9C3\">{indexLabel}:</span> <span style=\"color:#CD853F\"><strong>{y}</strong></span>",
+                        indexLabelPlacement: "inside",
+                        indexLabelFontColor: "white",
+                        indexLabelFontWeight: 600,
+                        indexLabelFontFamily: "Verdana",
+                        color: "#62C9C3",
+                        type: "bar",
+                        dataPoints: dataPoints
+                    }]
+                };
+
+                $("#chart_div").CanvasJSChart(options);
+            })
+
+        }
     </script>
+
+
+
 </body>
 
 </html>

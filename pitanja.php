@@ -20,49 +20,72 @@
     <?php
     include "header.php";
     ?>
-    <div id="omotac">
-        <div id="pitanja">
-            <table class="table display">
-                <tr>
-                    <th scope="col">Naslov</th>
-                    <th scope="col">Opis</th>
-                    <th scope="col">Odgovor</th>
-                    <th scope="col">Korisnik</th>
-                </tr>
-                <tbody id="pitanjaBody">
+    <div class="container" style='background-color: white;'>
+        <div id="omotac">
+            <div id="pitanja">
+                <table class="table display">
+                    <thead>
+                        <tr>
+                            <th scope="col">Naslov</th>
+                            <th scope="col">Opis</th>
+                            <th scope="col">Odgovor</th>
+                            <th scope="col">Tacno odgovorili</th>
+                            <th scope="col">Netacno odgovorili</th>
+                            <th scope="col">Korisnik</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pitanjaBody">
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
 
-        </div>
-        <div id="formaZaIzmenuPitanja">
-            <form class="mt-5">
-                <div class="form-group">
-                    <input type="text" class="form-control" id="naslov" placeholder="Naslov">
+            </div>
+            <br><br>
+            <div class="row">
+                <div class="col-2">
                 </div>
-                <div class="form-group">
-                    <textarea class="form-control" id="tekst" rows="3" placeholder="Tekst zadatka"></textarea>
+                <div class="col-8"
+                    style="border-radius: 10px;border-width: 0.5px; border-style: solid; text-align: center;">
+                    <div id="formaZaIzmenuPitanja" hidden="true" style="margin: 0 auto;">
+                        <br>
+                        <br>
+                        <h3><strong>Izmeni pitanje</strong></h3>
+                        <form class="mt-5">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="naslov" placeholder="Naslov">
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" id="tekst" rows="3"
+                                    placeholder="Tekst zadatka"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" type="text" id="odgovor" placeholder="Odgovor">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" type="text" id="korisnik" disabled="true"
+                                    placeholder="Korisnik">
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary form-control" id="izmeniPitanje"
+                                    disabled="true">Izmeni</button>
+                            </div>
+                            <input type="text" hidden="true" id="idPitanja" />
+                        </form>
+
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" type="text" id="odgovor" placeholder="Odgovor">
+                <div class="col-2">
                 </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" type="text" id="korisnik" disabled="true"
-                        placeholder="Korisnik">
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-primary" id="izmeniPitanje" disabled="true">Izmeni</button>
-                </div>
-                <input type="text" hidden="true" id="idPitanja" />
-            </form>
+            </div>
+            <br><br>
+
 
         </div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
         $(document).ready(function () {
-
             napuniTabelu();
 
             $("#izmeniPitanje").click(function (e) {
@@ -75,6 +98,7 @@
                 $.post("pitanjaServer.php", { akcija: "izmeni", naslov: naslov, tekst: tekst, odgovor: odgovor, id: id }, function (data) {
                     if (data !== "ok")
                         alert(data);
+                    $("#formaZaIzmenuPitanja").attr("hidden", true);
                     napuniTabelu();
                 })
             })
@@ -93,9 +117,12 @@
                             <td>${pitanje.naslov}</td>
                             <td>${pitanje.tekst}</td>
                             <td>${pitanje.odgovor}</td>
+                            <td>${pitanje.pogodili || 0}</td>
+                            <td>${pitanje.promasili || 0}</td>
                             <td>${pitanje.username}</td>
-                            <td> <button class="dugmeUnutarTabele" id=${pitanje.id}-IzmeniPitanje >Izmeni</button> </td>
-                            <td> <button class="dugmeUnutarTabele" id=${pitanje.id}-ObrisiPitanje  >Obrisi</button> </td>
+                            
+                            <td> <button class="dugmeUnutarTabele form-control" id=${pitanje.id}-IzmeniPitanje >Izmeni</button> </td>
+                            <td> <button class="dugmeUnutarTabele form-control" id=${pitanje.id}-ObrisiPitanje  >Obrisi</button> </td>
                         </tr>
                     `);
 
@@ -118,6 +145,7 @@
 
         }
         function napuniZaIzmenu(pitanje) {
+            $("#formaZaIzmenuPitanja").attr("hidden", false);
             $("#idPitanja").val(pitanje.id);
             $("#izmeniPitanje").attr("disabled", false);
             $("#naslov").val(pitanje.naslov);
@@ -126,6 +154,7 @@
             $("#korisnik").val(pitanje.username);
         }
     </script>
+
 
 </body>
 
